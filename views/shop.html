@@ -5,17 +5,55 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shop</title>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    .main-header {
+      width: 100%;
+      height: 3.5rem;
+      background-color: rgb(55, 100, 184);
+    }
+
+    .main-header__item-list {
+      padding: 0;
+      margin: 0;
+      list-style: none;
+      display: flex;
+    }
+    .main-header__item {
+      margin: 0 1rem;
+      padding: 1rem;
+    }
+    .main-header__link {
+      text-decoration: none;
+      color: rgb(253, 93, 0);
+    }
+
+    .main-header__link:active,
+    .main-header__link:hover,
+    .main-header__link.active {
+      color:white;
+    }
+
+    .main-container {
+      padding: 0 1rem;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <nav>
-      <ul>
-        <li><a href="/">Shop</a></li>
-        <li><a href="/admin/add-product">Add product</a></li>
+  <header class="main-header">
+    <nav class="main-header__nav">
+      <ul class="main-header__item-list">
+        <li class="main-header__item"><a class="main-header__link active" href="/">Shop</a></li>
+        <li class="main-header__item"><a class="main-header__link" href="/admin/add-product">Add product</a></li>
       </ul>
     </nav>
   </header>
-  <h1>My products</h1>
-  <p>List of products...</p>
+  <main class="main-container">
+    <h1>My products</h1>
+    <p>List of products...</p>
+  </main>
 </body>
 </html>
