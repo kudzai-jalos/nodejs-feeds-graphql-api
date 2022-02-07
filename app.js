@@ -7,8 +7,8 @@ const shopRoutes = require('./routes/shop');
 // Create an express application
 const app = express();
 
-// Add middleware
-
+//********Add middleware*******
+app.use(express.static("public"));
 app.use(require('body-parser').urlencoded({extended:false}));
 
 app.use("/admin",adminRoutes);

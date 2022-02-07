@@ -1,0 +1,35 @@
+.product-form {
+  padding: 1rem;
+  font-size: 1.2rem;
+}
+
+.product-form__control {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 0;
+}
+
+.product-form__control label {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.product-form__control input {
+  border: none;
+  border-bottom: 3px groove;
+}
+
+.product-form button {
+  background-color: rgb(55, 100, 184);
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  padding: .5rem 1.3rem;
+  border-radius: .5rem;
+}
+
+.product-form button:hover,
+.product-form button:active {
+  background-color: rgb(135, 253, 0);
+  color: rgb(55, 100, 184);
+}
