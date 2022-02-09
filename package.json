@@ -38,7 +38,7 @@
     "end-of-stream": "^1.4.4",
     "escape-goat": "^2.1.1",
     "express": "^4.17.2",
-    "express-handlebars": "^6.0.2",
+    "express-handlebars": "3.0",
     "fill-range": "^7.0.1",
     "get-stream": "^4.1.0",
     "glob-parent": "^5.1.2",

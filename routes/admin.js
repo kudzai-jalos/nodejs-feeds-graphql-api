@@ -11,7 +11,8 @@ router
   .route("/add-product")
   .get((req, res, next) => {
     res.render("add-product",{
-      docTitle:"Add product"
+      docTitle:"Add product",
+      path:"/admin/add-product",
     });
   })
   .post((req, res, next) => {
