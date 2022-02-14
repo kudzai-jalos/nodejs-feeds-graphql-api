@@ -2,6 +2,7 @@
 const express = require("express");
 
 const expressHbs = require("express-handlebars");
+const errorController = require("./controllers/error");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 // Create an express application
@@ -23,13 +24,11 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(require("body-parser").urlencoded({ extended: false }));
 
-app.use("/admin", adminRoutes.routes);
+app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 // Add 404
-app.use((req, res, next) => {
-  res.status(404).render("404", { docTitle: "Page not found" });
-});
+app.use(errorController.get404);
 // Listen for incoming requests
 app.listen(3000, () => {
   console.log("Server running on port 3000");

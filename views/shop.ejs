@@ -1,12 +1,13 @@
-<%- include('includes/head.ejs') %> 
-<%- include('includes/navigation.ejs') %>
+<%- include('includes/head.ejs') %> <%- include('includes/navigation.ejs') %>
 <main class="main-container">
   <h1>My products</h1>
   <% if (products.length > 0) { %>
-  <ul>
+  <ul class="grid">
     <% products.forEach(product => { %>
     <li class="card product-item">
-      <header class="card__header">h3.product__title #{product.title}</header>
+      <header class="card__header">
+        <h3 class="product__title"><%= product.title %></h3>
+      </header>
       <div class="card-image">
         <img src="https://picsum.photos/536/354" alt="product" />
       </div>
