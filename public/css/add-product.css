@@ -11,12 +11,20 @@
   margin: 1rem 0;
 }
 
-.product-form__control label {
+.product-form__control > label {
   margin-bottom: 0.5rem;
   font-weight: bold;
 }
 
-.product-form__control input {
+.product-form__control > input {
   border: none;
   border-bottom: 3px groove;
 }
+
+.product-form__control > textarea {
+  resize: none;
+  border: 3px groove;
+}
+
+
+

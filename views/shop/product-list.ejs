@@ -1,0 +1,32 @@
+<% if (products.length > 0) { %>
+  <link rel="stylesheet" href="/css/shop.css">
+<ul class="grid">
+  <% products.forEach(product => { %>
+  <li class="card product-item">
+    <header class="card__header">
+      <h3 class="product__title"><%= product.title %></h3>
+    </header>
+    <div class="card-image">
+      <img src="<%= product.imgUrl %>" alt="<%= product.title %> " />
+    </div>
+    <div class="card__content">
+      <h2 class="product__price"><%= product.price %></h2>
+      <p class="product__desc"><%= product.description %></p>
+    </div>
+    <div class="card__actions">
+
+      <% if (locals.isAdmin) { %>
+        <a href="/admin/edit-product" class="btn">Edit</a>
+          <form action="" method="post">
+            <button type="submit" class="btn">Delete</button>
+          </form>
+      <% } else { %>
+        <button class="btn">Add to Cart</button>
+      <% } %>
+    </div>
+  </li>
+  <% }) %>
+</ul>
+<% } else { %>
+<p>No products found</p>
+<% } %>

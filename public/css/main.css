@@ -5,6 +5,7 @@ body {
 
 h2 {
   color: rgb(55, 100, 184);
+  text-align: center;
 }
 .main-header {
   width: 100%;
