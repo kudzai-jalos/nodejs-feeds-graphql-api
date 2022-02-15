@@ -8,7 +8,7 @@ router
   .route("/add-product")
   .get(productsController.getAddProduct)
   .post(productsController.postAddProduct);
-router.post("/products/remove");
+router.post("/products/remove",productsController.postRemoveProduct);
 router.get("/products", productsController.getAdminProducts);
 router
   .route("/products/edit/:productId")

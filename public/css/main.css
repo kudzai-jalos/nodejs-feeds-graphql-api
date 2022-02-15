@@ -3,6 +3,10 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 h2 {
   color: rgb(55, 100, 184);
   text-align: center;

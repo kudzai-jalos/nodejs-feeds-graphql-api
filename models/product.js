@@ -33,18 +33,21 @@ module.exports = class Product {
     });
   }
 
-  static remove(id) {
+  static remove(id,cb) {
     getProductsFromFile((products) => {
-      products.filter((product) => product.id !== id);
+      console.log("before",products);
+      products = products.filter((product) => product.id !== id);
+      console.log("After",products);
       fs.writeFile(p, JSON.stringify(products), (err) => {
         if (err) {
           console.log("ERROR:", err);
         }
+        cb();
       });
     });
   }
 
-  static update(id, title, imgUrl, description, price) {
+  static update(id, title, imgUrl, description, price,cb) {
     getProductsFromFile((products) => {
       const productIndex = products.findIndex((product) => product.id === id);
       if (products[productIndex]) {
@@ -63,6 +66,7 @@ module.exports = class Product {
       } else {
         console.log("Product not found");
       }
+      cb();
     });
   }
 

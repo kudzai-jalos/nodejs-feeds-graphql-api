@@ -17,7 +17,7 @@
 
       <% if (locals.isAdmin) { %>
         <a href="/admin/products/edit/<%= product.id %>" class="btn">Edit</a>
-          <form action="/admin/products/delete" method="post">
+          <form action="/admin/products/remove" method="post">
             <button type="submit" class="btn">Delete</button>
             <input type="hidden" name="productId" value="<%= product.id %>">
           </form>
