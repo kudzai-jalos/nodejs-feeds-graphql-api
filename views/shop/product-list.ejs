@@ -10,18 +10,20 @@
       <img src="<%= product.imgUrl %>" alt="<%= product.title %> " />
     </div>
     <div class="card__content">
-      <h2 class="product__price"><%= product.price %></h2>
+      <h2 class="product__price">$ <%= product.price %></h2>
       <p class="product__desc"><%= product.description %></p>
     </div>
     <div class="card__actions">
 
       <% if (locals.isAdmin) { %>
-        <a href="/admin/edit-product" class="btn">Edit</a>
-          <form action="" method="post">
+        <a href="/admin/products/edit/<%= product.id %>" class="btn">Edit</a>
+          <form action="/admin/products/delete" method="post">
             <button type="submit" class="btn">Delete</button>
+            <input type="hidden" name="productId" value="<%= product.id %>">
           </form>
       <% } else { %>
-        <button class="btn">Add to Cart</button>
+        <a href="/products/<%= product.id %>" class="btn">Details</a>
+        <%- include("../partials/add-to-cart.ejs",{product}) %> 
       <% } %>
     </div>
   </li>

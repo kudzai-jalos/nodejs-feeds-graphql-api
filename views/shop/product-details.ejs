@@ -1,5 +1,15 @@
 <%- include('../partials/head.ejs') %>
-</head>
+<link rel="stylesheet" href="/css/product-details.css">
+  </head>
 <%- include('../partials/navigation.ejs') %>
-<h2>Product details</h2>
+  <main class="main-container">
+    <h2><%= product.title %> </h2>
+    <hr>
+    <img src="<%= product.imgUrl %>" alt="<%= product.title %> ">
+    <div class="product__info">
+      <p><%= product.description %> </p>
+      <p class="price">$ <%= product.price %></p>
+    </div>
+    <%- include("../partials/add-to-cart.ejs") %> 
+</main>
 <%- include('../partials/foot.ejs')%>

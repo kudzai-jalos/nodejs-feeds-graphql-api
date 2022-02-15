@@ -1,7 +1,8 @@
+const Cart = require("../models/cart");
 const Product = require("../models/product");
 
 exports.getAddProduct = (req, res, next) => {
-  res.render("admin/add-product", {
+  res.render("admin/edit-product", {
     docTitle: "Add product",
     path: "/admin/add-product",
     activeAddProduct: true,
@@ -9,12 +10,43 @@ exports.getAddProduct = (req, res, next) => {
   });
 };
 
+exports.getEditProduct = (req, res, next) => {
+  const { productId } = req.params;
+  Product.findById(productId, (product) => {
+    res.render("admin/edit-product", {
+      docTitle: "Edit product",
+      path: "/admin/add-product",
+      activeAddProduct: true,
+      productCSS: true,
+      product,
+    });
+  });
+};
+
+exports.postEditProduct = (req, res, next) => {
+  const { productId } = req.params;
+  const { title, imgUrl, price, description } = req.body;
+
+  Product.findById(productId, (product) => {
+    console.log(product);
+    Product.update(product.id, title, imgUrl, description, price);
+
+    res.redirect("/admin/products");
+  });
+};
+
 exports.postAddProduct = (req, res, next) => {
   const { title, imgUrl, price, description } = req.body;
   const product = new Product(title, imgUrl, description, price);
   product.save();
-  res.redirect("/products");
+  res.redirect("/admin/products");
 };
+
+exports.postRemoveProduct = (req,res,next) => {
+  const { productId } = req.body;
+  Product.remove(productId);
+  res.redirect("/admin/products");
+}
 
 exports.getProducts = (req, res, next) => {
   Product.fetchAll((products) => {
@@ -29,20 +61,13 @@ exports.getProducts = (req, res, next) => {
   });
 };
 
-exports.getEditProduct = (req, res, next) => {
-  res.render("admin/products/edit", {
-    docTitle: "Add product",
-    path: "/admin/products/edit",
-  });
-};
-
 exports.getAdminProducts = (req, res, next) => {
   Product.fetchAll((products) => {
     res.render("admin/products", {
       docTitle: "Admin Product",
       path: "/admin/products",
       products,
-      isAdmin:true,
+      isAdmin: true,
     });
   });
 };
@@ -54,6 +79,15 @@ exports.getCart = (req, res, next) => {
   });
 };
 
+exports.postCart = (req, res, next) => {
+  const { productId } = req.body;
+
+  Product.findById(productId, (product) => {
+    Cart.addProduct(product.id, product.price);
+  });
+
+  res.redirect("/cart");
+};
 
 exports.getOrders = (req, res, next) => {
   res.render("shop/orders", {
@@ -70,8 +104,12 @@ exports.getCheckout = (req, res, next) => {
 };
 
 exports.getProductDetails = (req, res, next) => {
-  res.render("shop/products-details", {
-    docTitle: "Product details",
-    path: "/product-details",
+  const { productId } = req.params;
+  Product.findById(productId, (product) => {
+    res.render("shop/product-details", {
+      docTitle: product.title,
+      path: "/",
+      product,
+    });
   });
 };
