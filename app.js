@@ -1,7 +1,6 @@
 // import express module
 const express = require("express");
 
-const expressHbs = require("express-handlebars");
 const errorController = require("./controllers/error");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");

@@ -38,8 +38,14 @@ exports.postEditProduct = (req, res, next) => {
 exports.postAddProduct = (req, res, next) => {
   const { title, imgUrl, price, description } = req.body;
   const product = new Product(title, imgUrl, description, price);
-  product.save();
-  res.redirect("/admin/products");
+  product
+    .save()
+    .then(() => {
+      res.redirect("/admin/products");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.postRemoveProduct = (req, res, next) => {
@@ -51,27 +57,35 @@ exports.postRemoveProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("shop/index", {
-      docTitle: "Shop",
-      path: "/",
-      products,
-      hasProducts: products.length > 0,
-      activeShop: true,
-      shopCSS: true,
+  Product.fetchAll()
+    .then(([rows, fieldData]) => {
+      res.render("shop/index", {
+        docTitle: "Shop",
+        path: "/",
+        products: rows,
+        hasProducts: rows.length > 0,
+        activeShop: true,
+        shopCSS: true,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
 };
 
 exports.getAdminProducts = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("admin/products", {
-      docTitle: "Admin Product",
-      path: "/admin/products",
-      products,
-      isAdmin: true,
+  Product.fetchAll()
+    .then(([rows, fieldData]) => {
+      res.render("admin/products", {
+        docTitle: "Admin Product",
+        path: "/admin/products",
+        products: rows,
+        isAdmin: true,
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
 };
 
 exports.getCart = (req, res, next) => {
@@ -98,12 +112,10 @@ exports.postCart = (req, res, next) => {
   const { productId } = req.body;
 
   Product.findById(productId, (product) => {
-    Cart.addProduct(product.id, product.price,()=>{
+    Cart.addProduct(product.id, product.price, () => {
       res.redirect("/cart");
     });
   });
-
-  
 };
 
 exports.postRemoveCartItem = (req, res, next) => {
@@ -132,11 +144,15 @@ exports.getCheckout = (req, res, next) => {
 
 exports.getProductDetails = (req, res, next) => {
   const { productId } = req.params;
-  Product.findById(productId, (product) => {
-    res.render("shop/product-details", {
-      docTitle: product.title,
-      path: "/",
-      product,
+  Product.findById(productId)
+    .then(([rows, fieldData]) => {
+      res.render("shop/product-details", {
+        docTitle: rows[0].title,
+        path: "/",
+        product: rows[0],
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
 };
