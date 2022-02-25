@@ -38,11 +38,11 @@ exports.getCart = (req, res, next) => {
   req.user
     .getCart()
     .then((cart) => {
-      console.log(cart)
+      console.log(cart);
       return cart.getProducts();
     })
     .then((products) => {
-      console.log(products)
+      console.log(products);
       res.render("shop/cart", {
         docTitle: "My Cart",
         path: "/cart",
@@ -72,12 +72,13 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const { productId } = req.body;
-
-  // Product.findById(productId, (product) => {
-  //   Cart.addProduct(product.id, product.price, () => {
-  //     res.redirect("/cart");
-  //   });
-  // });
+  Product.findByPk(productId)
+    .then((product) => {
+      Cart.addProduct(product.id, product.price, () => {
+        res.redirect("/cart");
+      });
+    })
+    .catch((err) => console.log(err));
 };
 
 exports.postRemoveCartItem = (req, res, next) => {

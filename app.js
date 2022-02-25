@@ -64,6 +64,7 @@ sequelize
     }
     return Promise.resolve(user);
   }).then(user=>{
+    user.createCart();
     app.listen(3000,()=>{
       console.log("Server running on port 3000");
     })
