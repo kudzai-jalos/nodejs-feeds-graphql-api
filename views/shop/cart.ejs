@@ -3,23 +3,23 @@
 </head>
 <%- include('../partials/navigation.ejs') %>
 <h2>Cart</h2>
-<% if (cartItems.length>0) { %>
+<% if (products.length>0) { %>
  <ul class="cart-items">
-  <% cartItems.forEach(cartItem=>{ %> 
+  <% products.forEach(product=>{ %> 
     <li class="cart-item">
       <div class="cart-item__body">
-        <p class="title"><%= cartItem.title %></p>
-        <p class="price">$&nbsp;<%= (+cartItem.price).toFixed(2) %></p>
-        <p class="qty">x<%=cartItem.qty%></p>
+        <p class="title"><%= product.title %></p>
+        <p class="price">$&nbsp;<%= (+product.price).toFixed(2) %></p>
+        <p class="qty">x<%=product.qty%></p>
       </div>
       <div class="cart-item__actions">
-        <form action="/cart/remove/<%= cartItem.id %>" method="post">
+        <form action="/cart/remove/<%= product.id %>" method="post">
           <button type="submit" class="btn">-</button>
-          <input type="hidden" name="productId" value="<%= cartItem.id %>">
+          <input type="hidden" name="productId" value="<%= product.id %>">
         </form>
         <form action="/cart/add" method="post">
           <button type="submit" class="btn">+</button>
-          <input type="hidden" name="productId" value="<%= cartItem.id %>">
+          <input type="hidden" name="productId" value="<%= product.id %>">
         </form>
       </div>
     </li>

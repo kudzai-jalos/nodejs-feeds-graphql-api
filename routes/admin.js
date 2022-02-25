@@ -1,18 +1,18 @@
 const express = require("express");
 
-const productsController = require("../controllers/products");
+const adminController = require("../controllers/admin");
 
 const router = express.Router();
 
 router
   .route("/add-product")
-  .get(productsController.getAddProduct)
-  .post(productsController.postAddProduct);
-router.post("/products/remove",productsController.postRemoveProduct);
-router.get("/products", productsController.getAdminProducts);
+  .get(adminController.getAddProduct)
+  .post(adminController.postAddProduct);
+router.post("/products/remove",adminController.postRemoveProduct);
+router.get("/products", adminController.getAdminProducts);
 router
   .route("/products/edit/:productId")
-  .get(productsController.getEditProduct)
-  .post(productsController.postEditProduct);
+  .get(adminController.getEditProduct)
+  .post(adminController.postEditProduct);
 
 module.exports = router;

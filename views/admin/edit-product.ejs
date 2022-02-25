@@ -6,7 +6,7 @@
 
 <main>
   <form action="<%= (locals.product ? `/admin/products/edit/${product.id}` : '/admin/add-product') %>" method="post" class="product-form">
-    <h2>Edit product</h2>
+    <h2><%= (locals.product ? 'Edit' : 'Add') %> product</h2>
     <div class="product-form__control">
       <label for="title">Title</label>
       <input
@@ -19,13 +19,13 @@
       />
     </div>
     <div class="product-form__control">
-      <label for="imgUrl">Image URL</label>
+      <label for="iamgeUrl">Image URL</label>
       <input
         type="text"
-        name="imgUrl"
-        id="imgUrl"
+        name="imageUrl"
+        id="imageUrl"
         <% if (locals.product) { %> 
-          value="<%= product.imgUrl %> "
+          value="<%= product.imageUrl %> "
         <% } %> 
       />
     </div>
@@ -48,7 +48,7 @@
         id="description"
         rows="5"><% if (locals.product) { %><%= product.description %><% } %></textarea>
     </div>
-    <button class="btn" type="submit">Save</button>
+    <button class="btn" type="submit"><%= (locals.product ? 'Save' : 'Add') %></button>
   </form>
 </main>
 <%- include('../partials/foot.ejs')%>
