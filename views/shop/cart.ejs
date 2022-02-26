@@ -10,7 +10,7 @@
       <div class="cart-item__body">
         <p class="title"><%= product.title %></p>
         <p class="price">$&nbsp;<%= (+product.price).toFixed(2) %></p>
-        <p class="qty">x<%=product.qty%></p>
+        <p class="qty">x<%=product.cartItem.quantity %></p>
       </div>
       <div class="cart-item__actions">
         <form action="/cart/remove/<%= product.id %>" method="post">
@@ -26,6 +26,9 @@
   <% }) %> 
   <li class="price cart-items__total"><%= totalPrice.toFixed(2) %> </li>
 </ul>
+<form action="/cart/checkout" method="post">
+  <button type="submit" class="btn">Checkout</button>
+</form>
 <% } else {%>
   <p>No items in your cart</p>
 <% } %> 

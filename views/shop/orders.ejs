@@ -2,4 +2,18 @@
 </head>
 <%- include('../partials/navigation.ejs') %>
 <h2>Orders</h2>
+<ul>
+  <% orders.forEach((order)=>{ %>
+    <li>
+      <h3>Order #<%= order.id%></h3>
+      <ul>
+        <% order.products.forEach((product)=>{ %>
+          <li>
+            <h4><%= product.title %> (<%= product.orderItem.quantity %>)</h4>
+          </li>
+        <% }) %>
+      </ul>
+    </li>
+  <% }) %>
+</ul>
 <%- include('../partials/foot.ejs')%>

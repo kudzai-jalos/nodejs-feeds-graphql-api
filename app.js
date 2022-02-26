@@ -1,13 +1,21 @@
 // import express module
 const express = require("express");
 
-const errorController = require("./controllers/error");
+// import models
 const Cart = require("./models/cart");
 const CartItem = require("./models/CartItem");
+const Order = require("./models/order");
+const OrderItem = require("./models/OrderItem");
 const Product = require("./models/product");
 const User = require("./models/user");
+
+// Import controllers
+const errorController = require("./controllers/error");
+
+// Import routes
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+
 // Create an express application
 const app = express();
 
@@ -18,7 +26,10 @@ User.hasMany(Product);
 Product.belongsTo(User);
 User.hasOne(Cart);
 Product.belongsToMany(Cart,{through:CartItem});
-Cart.belongsToMany(Product,{through:CartItem})
+Cart.belongsToMany(Product,{through:CartItem});
+User.hasMany(Order);
+Order.belongsToMany(Product,{through:OrderItem});
+Product.belongsToMany(Order,{through:OrderItem});
 // Config
 // app.engine(
 //   "hbs",
@@ -51,6 +62,7 @@ app.use(shopRoutes);
 app.use(errorController.get404);
 // Listen for incoming requests
 
+let fetchedUser;
 sequelize
   .sync() // {force:true}
   .then(() => {
@@ -64,9 +76,16 @@ sequelize
     }
     return Promise.resolve(user);
   }).then(user=>{
-    user.createCart();
+    fetchedUser= user;
+    return user.getCart();
+  }).then(cart=>{
+    if (!cart) {
+      return fetchedUser.createCart();
+    }
+    return Promise.resolve();
+  }).then(()=>{
     app.listen(3000,()=>{
       console.log("Server running on port 3000");
-    })
+    });
   })
   .catch((err) => console.log(err));

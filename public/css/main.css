@@ -23,6 +23,7 @@ h2 {
   list-style: none;
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
 }
 .main-header__item {
   margin: 0 1rem;
