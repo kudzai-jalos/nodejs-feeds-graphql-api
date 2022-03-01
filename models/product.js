@@ -1,91 +1,121 @@
-const { ObjectId } = require("mongodb");
-const { getDb } = require("../util/database");
+const { default: mongoose } = require("mongoose");
+const { Schema } = require("mongoose");
 
-module.exports = class Product {
-  constructor(title, imageUrl, description, price,userId) {
-    this.title = title;
-    this.imageUrl = imageUrl;
-    this.description = description;
-    this.price = price;
-    this.userId = userId;
+const productSchema = new Schema({
+  title: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  description: {
+    type: String,
+    required: true,
+  },
+  imageUrl: {
+    type: String,
+    required: true,
+  },
+  userId:{
+    type: Schema.Types.ObjectId,
+    ref:'user',
+    required:true
   }
+});
 
-  save() {
-    const db = getDb();
+module.exports= mongoose.model("product",productSchema);
 
-    return db
-      .collection("products")
-      .insertOne(this)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((err) => console.log(err));
-  }
 
-  static remove(id) {
-    const db = getDb();
-    return db
-      .collection("products")
-      .deleteOne({ _id: new ObjectId(id) })
-      .then((result) => {
-        return result;
-      })
-      .catch((err) => console.log(err));
-  }
+// const { ObjectId } = require("mongodb");
+// const { getDb } = require("../util/database");
 
-  static update(id, updateData) {
-    const db = getDb();
-    return db
-      .collection("products")
-      .updateOne(
-        { _id: new ObjectId(id) },
-        {
-          $set: { ...updateData },
-          $currentDate: { lastModified: true },
-        }
-      )
-      .then((result) => {
-        return result;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
+// module.exports = class Product {
+//   constructor(title, imageUrl, description, price,userId) {
+//     this.title = title;
+//     this.imageUrl = imageUrl;
+//     this.description = description;
+//     this.price = price;
+//     this.userId = userId;
+//   }
 
-  static fetchAll() {
-    const db = getDb();
+//   save() {
+//     const db = getDb();
 
-    return db.collection("products").find().toArray();
-  }
+//     return db
+//       .collection("products")
+//       .insertOne(this)
+//       .then((result) => {
+//         console.log(result);
+//       })
+//       .catch((err) => console.log(err));
+//   }
 
-  static findById(id) {
-    const db = getDb();
+//   static remove(id) {
+//     const db = getDb();
+//     return db
+//       .collection("products")
+//       .deleteOne({ _id: new ObjectId(id) })
+//       .then((result) => {
+//         return result;
+//       })
+//       .catch((err) => console.log(err));
+//   }
 
-    return db.collection("products").findOne({ _id: new ObjectId(id) });
-  }
-};
+//   static update(id, updateData) {
+//     const db = getDb();
+//     return db
+//       .collection("products")
+//       .updateOne(
+//         { _id: new ObjectId(id) },
+//         {
+//           $set: { ...updateData },
+//           $currentDate: { lastModified: true },
+//         }
+//       )
+//       .then((result) => {
+//         return result;
+//       })
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   }
 
-// const Sequelize = require("sequelize");
+//   static fetchAll() {
+//     const db = getDb();
 
-// const sequelize = require("../util/database");
+//     return db.collection("products").find().toArray();
+//   }
 
-// const Product = sequelize.define("product", {
-//   id: {
-//     type: Sequelize.INTEGER,
-//     allowNull: false,
-//     autoIncrement: true,
-//     primaryKey: true,
-//   },
-//   title: {
-//     type: Sequelize.STRING,
-//     allowNull: false,
-//   },
-//   description: Sequelize.STRING,
-//   imageUrl: Sequelize.STRING,
-//   price: {
-//     type: Sequelize.DOUBLE,
-//     allowNull: false,
-//   },
-// });
+//   static findById(id) {
+//     const db = getDb();
 
-// module.exports = Product;
+//     return db.collection("products").findOne({ _id: new ObjectId(id) });
+//   }
+// };
+
+// // const Sequelize = require("sequelize");
+
+// // const sequelize = require("../util/database");
+
+// // const Product = sequelize.define("product", {
+// //   id: {
+// //     type: Sequelize.INTEGER,
+// //     allowNull: false,
+// //     autoIncrement: true,
+// //     primaryKey: true,
+// //   },
+// //   title: {
+// //     type: Sequelize.STRING,
+// //     allowNull: false,
+// //   },
+// //   description: Sequelize.STRING,
+// //   imageUrl: Sequelize.STRING,
+// //   price: {
+// //     type: Sequelize.DOUBLE,
+// //     allowNull: false,
+// //   },
+// // });
+
+// // module.exports = Product;
