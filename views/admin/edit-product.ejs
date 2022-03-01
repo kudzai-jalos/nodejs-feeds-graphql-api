@@ -5,7 +5,7 @@
 %>
 
 <main>
-  <form action="<%= (locals.product ? `/admin/products/edit/${product.id}` : '/admin/add-product') %>" method="post" class="product-form">
+  <form action="<%= (locals.product ? `/admin/products/edit/${product._id}` : '/admin/add-product') %>" method="post" class="product-form">
     <h2><%= (locals.product ? 'Edit' : 'Add') %> product</h2>
     <div class="product-form__control">
       <label for="title">Title</label>
@@ -14,7 +14,7 @@
         name="title"
         id="title"
         <% if (locals.product) { %> 
-          value="<%= product.title %> "
+          value="<%= product.title %>"
         <% } %> 
       />
     </div>
@@ -25,7 +25,7 @@
         name="imageUrl"
         id="imageUrl"
         <% if (locals.product) { %> 
-          value="<%= product.imageUrl %> "
+          value="<%= product.imageUrl %>"
         <% } %> 
       />
     </div>

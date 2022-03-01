@@ -1,8 +1,10 @@
-const Cart = require("../models/cart");
+const Order = require("../models/order");
 const Product = require("../models/product");
+const User = require("../models/user");
 
 exports.getShop = (req, res, next) => {
-  Product.findAll()
+  // Product.findAll()
+  Product.fetchAll()
     .then((products) => {
       res.render("shop/products", {
         docTitle: "Shop",
@@ -17,9 +19,11 @@ exports.getShop = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  req.user
-    .getProducts()
+  // req.user
+  //   .getProducts()
+  Product.fetchAll()
     .then((products) => {
+      // console.table(products);
       res.render("shop/products", {
         docTitle: "Products",
         path: "/products",
@@ -35,166 +39,137 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  req.user
-    .getCart({ include: Product })
-    .then((cart) => {
-      console.log(cart);
-      return cart.getProducts();
-    })
+  Product.fetchAll()
     .then((products) => {
-      console.log(products);
       res.render("shop/cart", {
         docTitle: "My Cart",
         path: "/cart",
-        products,
-        totalPrice: 0,
+        products: req.user.cart.items.map((cp) => {
+          const product = products.find(
+            (prod) => prod._id.toString() === cp.productId.toString()
+          );
+          return { ...product, quantity: cp.quantity };
+        }),
+        totalPrice: req.user.cart.totalPrice,
       });
     })
-    .catch((err) => console.log(err));
-  // Product.fetchAll((products) => {
-  //   Cart.fetchCart((cart) => {
-  //     res.render("shop/cart", {
-  //       docTitle: "My Cart",
-  //       path: "/cart",
-  //       cartItems: cart.products.map((cartItem) => {
-  //         const product = products.find((prod) => cartItem.id === prod.id);
-  //         return {
-  //           ...cartItem,
-  //           title: product.title,
-  //           price: product.price,
-  //         };
-  //       }),
-  //       totalPrice: cart.totalPrice,
-  //     });
-  //   });
-  // });
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.postCart = (req, res, next) => {
   const { productId } = req.body;
-  let fetchedCart;
-  let newQuantity = 1;
-  req.user
-    .getCart()
-    .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts({ where: { id: productId } });
-    })
-    .then((products) => {
-      let product;
-      if (products.length > 0) {
-        product = products[0];
-      }
 
-      if (product) {
-        newQuantity += product.cartItem.quantity;
-        return Promise.resolve(product);
-      }
-      return Product.findByPk(productId);
-    })
+  Product.findById(productId)
     .then((product) => {
-      return fetchedCart.addProduct(product, {
-        through: { quantity: newQuantity },
-      });
+      const user = new User(
+        req.user._id,
+        req.user.username,
+        req.user.email,
+        req.user.cart || { items: [], totalPrice: 0 }
+      );
+
+      return user.addToCart(product);
     })
     .then((result) => {
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
-  // Product.findByPk(productId)
-  //   .then((product) => {
-  //     Cart.addProduct(product.id, product.price, () => {
-  //       res.redirect("/cart");
-  //     });
-  //   })
-  //   .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.postRemoveCartItem = (req, res, next) => {
-  const { productId } = req.params;
-  let fetchedCart;
-  req.user
-    .getCart()
-    .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts({ where: { id: productId } });
-    })
-    .then(([product]) => {
-      if (product.cartItem.quantity === 1) {
-        return fetchedCart.removeProduct(product);
-      }
-      const newQuantity = product.cartItem.quantity - 1;
-      return fetchedCart.addProduct(product, {
-        through: { quantity: newQuantity },
-      });
+  const { productId } = req.body;
+
+  Product.findById(productId)
+    .then((product) => {
+      const user = new User(
+        req.user._id,
+        req.user.username,
+        req.user.email,
+        req.user.cart || { items: [], totalPrice: 0 }
+      );
+
+      return user.removeFromCart(product);
     })
     .then((result) => {
       res.redirect("/cart");
     })
-    .catch((err) => console.log(err));
-  // Product.findById(productId, (product) => {
-  //   Cart.remove(product.id, () => {
-  //     res.redirect("/cart");
-  //   });
-  // });
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.getOrders = (req, res, next) => {
-  req.user
-    .getOrders({ include: Product })
+  let fetchedProducts;
+  Product.fetchAll()
+    .then((products) => {
+      fetchedProducts = products;
+      return Order.findByUserId(req.user._id);
+    })
     .then((orders) => {
-      console.log(orders[0].products);
       res.render("shop/orders", {
         docTitle: "My Orders",
         path: "/orders",
-        orders,
+        orders: orders.map((order) => {
+          const productIds = order.items.map((item) =>
+            item.productId.toString()
+          );
+          const products = fetchedProducts
+            .filter((prod) => {
+              return productIds.includes(prod._id.toString());
+            })
+            .map((product) => {
+              return {
+                ...product,
+                quantity: order.items.find(
+                  (item) => product._id.toString() === item.productId.toString()
+                ).quantity,
+              };
+            });
+          console.log("order data ->", {
+            _id: order._id,
+            products,
+          });
+          return {
+            ...order,
+            products,
+          };
+        }),
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 exports.postCheckout = (req, res, next) => {
-  let fetchedCart;
-  let fetchedProducts;
-  req.user
-    .getCart()
-    .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts();
-    })
-    .then((products) => {
-      fetchedProducts = products;
-      return req.user.createOrder();
-    })
-    .then((order) => {
-      const promises = [];
-      for (let i = 0; i < fetchedProducts.length; i++) {
-        promises.push(
-          order.addProduct(fetchedProducts[i], {
-            through: { quantity: fetchedProducts[i].cartItem.quantity },
-          })
-        );
-      }
-      return Promise.all(promises);
+  const order = new Order(req.user._id, req.user.cart.items);
+
+  order
+    .save()
+    .then((result) => {
+      const user = new User(
+        req.user._id,
+        req.user.username,
+        req.user.email,
+        req.user.cart || { items: [], totalPrice: 0 }
+      );
+      return user.clearCart();
     })
     .then((result) => {
-      return fetchedCart.setProducts(null);
-    })
-    .then(() => {
       res.redirect("/orders");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+    });
 };
-// exports.getCheckout = (req, res, next) => {
-//   res.render("shop/checkout", {
-//     docTitle: "Checkout",
-//     path: "/checkout",
-//   });
-// };
 
 exports.getProductDetails = (req, res, next) => {
   const { productId } = req.params;
-  Product.findByPk(productId)
+  Product.findById(productId)
     .then((product) => {
       res.render("shop/product-details", {
         docTitle: product.title,
