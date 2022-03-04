@@ -1,6 +1,9 @@
 const Product = require("../models/product");
 
 exports.getAddProduct = (req, res, next) => {
+  if (!req.session.isLoggedIn) {
+    res.redirect("/login");
+  }
   res.render("admin/edit-product", {
     docTitle: "Add product",
     path: "/admin/add-product",
@@ -36,20 +39,6 @@ exports.postRemoveProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => console.log(err));
-  // req.user
-  //   .getProducts({ where: { id: productId } })
-  //   .then(([product]) => {
-  //     return product.destroy();
-  //   })
-  //   .then((result) => {
-  //     res.redirect("/admin/products");
-  //   })
-  //   .catch((err) => console.log(err));
-
-  // Product.remove(productId, () => {
-  //   console.log("deleting:", productId);
-  //   res.redirect("/admin/products");
-  // });
 };
 
 exports.getEditProduct = (req, res, next) => {

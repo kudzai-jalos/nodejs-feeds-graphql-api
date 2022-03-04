@@ -2,7 +2,7 @@ const Order = require("../models/order");
 const Product = require("../models/product");
 const User = require("../models/user");
 
-exports.getShop = (req, res, next) => {
+exports.getIndex = (req, res, next) => {
   // Product.findAll()
   Product.find()
     .then((products) => {

@@ -16,10 +16,13 @@
         <form action="/cart/remove/" method="post">
           <button type="submit" class="btn">-</button>
           <input type="hidden" name="productId" value="<%= product._id %>">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
         </form>
         <form action="/cart/add" method="post">
           <button type="submit" class="btn">+</button>
           <input type="hidden" name="productId" value="<%= product._id %>">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         </form>
       </div>
     </li>
@@ -29,6 +32,7 @@
 </ul>
 <form action="/cart/checkout" method="post">
   <button type="submit" class="btn">Checkout</button>
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 </form>
 <% } else {%>
   <p>No items in your cart</p>

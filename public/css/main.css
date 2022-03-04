@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 * {
@@ -17,12 +17,17 @@ h2 {
   background-color: rgb(55, 100, 184);
 }
 
+.main-header__nav {
+  display: flex;
+  justify-content: space-between;
+}
+
 .main-header__item-list {
   padding: 0;
   margin: 0;
   list-style: none;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-around;
   flex-wrap: wrap;
 }
 .main-header__item {
@@ -32,7 +37,7 @@ h2 {
 .main-header__link {
   color: white;
   text-decoration: none;
-  font-size: .8rem;
+  font-size: 0.8rem;
   letter-spacing: 2px;
   font-weight: 700;
 }
@@ -52,16 +57,31 @@ h2 {
 }
 
 .btn {
-  background-color: transparent;
-  border: 2px solid;
-  color: rgb(55, 100, 184);
+  background-color: rgb(55, 100, 184);
+  color: white;
   font-size: 1.2rem;
-  padding: .5rem 1.3rem;
-  border-radius: .5rem;
+  padding: 0.5rem 1.3rem;
+  border-radius: 0.5rem;
 }
 
 .btn:hover,
 .btn:active {
-  background-color: rgb(55, 100, 184);
-  color: white;
+  background-color: white;
+  color: rgb(55, 100, 184);
+}
+
+.user-messages {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-messages > .msg {
+  padding: 0.3rem;
+  background-color: rgb(194, 209, 250);
+  border-radius: 3px;
+}
+
+.user-messages > .error {
+  background-color: rgb(255, 214, 214);
+  color: red;
 }
