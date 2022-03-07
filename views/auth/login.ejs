@@ -5,18 +5,14 @@
 <%- include('../partials/navigation.ejs')%>
 <form class="form" action="/login" method="post">
   <h2>Login</h2>
-  <% if (errorMessage) {%>
-    <div class="user-messages">
-      <p class="msg error"><%= errorMessage %></p>
-    </div>
-  <% } %>
+  <%- include("../partials/messages.ejs") %>
   <div class="form-control">
     <label for="email">Email</label>
-    <input id="email" name="email" type="text">
+    <input id="email" name="email" type="text" <% if (locals.oldBody) { %>value="<%= oldBody.email %>"<% } %>>
   </div>
   <div class="form-control">
     <label for="password">Password</label>
-    <input id="password" name="password" type="password">
+    <input id="password" name="password" type="password" >
   </div>
   
   <div class="form-actions">

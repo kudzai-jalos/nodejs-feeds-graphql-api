@@ -5,26 +5,22 @@
 <%- include('../partials/navigation.ejs')%>
 <form class="form" action="/signup" method="post">
   <h2>Login</h2>
-  <% if (errorMessage) {%>
-    <div class="user-messages">
-      <p class="msg error"><%= errorMessage %></p>
-    </div>
-  <% } %>
-  <div class="form-control">
+  <%- include("../partials/messages.ejs") %>
+  <div class="form-control <%= messages.find(e => e.param==="email") ? "invalid" : "" %>">
     <label for="email">Email</label>
-    <input id="email" name="email" type="text">
+    <input id="email" name="email" type="text" <% if (locals.oldBody) { %>value="<%= oldBody.email %>"<% } %> >
   </div>
-  <div class="form-control">
+  <div class="form-control <%= messages.find(e => e.param==="username") ? "invalid" : "" %>">
     <label for="username">Username</label>
-    <input id="username" name="username" type="text">
+    <input id="username" name="username" type="text" <% if (locals.oldBody) { %>value="<%= oldBody.username %>"<% } %>>
   </div>
-  <div class="form-control">
+  <div class="form-control <%= messages.find(e => e.param==="password") ? "invalid" : "" %>">
     <label for="password">Password</label>
-    <input id="password" name="password" type="password">
+    <input id="password" name="password" type="password" <% if (locals.oldBody) { %>value="<%= oldBody.password %>"<% } %>>
   </div>
-  <div class="form-control">
-    <label for="confirmPasswword">Confirm Password</label>
-    <input id="confirmPasswword" name="confirmPasswword" type="password">
+  <div class="form-control <%= messages.find(e => e.param==="confirmPassword") ? "invalid" : "" %>">
+    <label for="confirmPassword">Confirm Password</label>
+    <input id="confirmPassword" name="confirmPassword" type="password" <% if (locals.oldBody) { %>value="<%= oldBody.confirmPassword %>"<% } %>>
   </div>
   <div class="form-actions">
     <button class="btn" type="submit">Signup</button>

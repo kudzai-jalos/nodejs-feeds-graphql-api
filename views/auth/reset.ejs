@@ -5,11 +5,7 @@
 <%- include('../partials/navigation.ejs')%>
 <form class="form" action="/reset" method="post">
   <h2>Reset password</h2>
-  <% if (errorMessage) {%>
-    <div class="user-messages">
-      <p class="msg error"><%= errorMessage %></p>
-    </div>
-  <% } %>
+  <%- include("../partials/messages.ejs") %>
   <div class="form-control">
     <label for="email">Email</label>
     <input id="email" name="email" type="text">

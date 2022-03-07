@@ -7,6 +7,7 @@
 <main>
   <form action="<%= (locals.product ? `/admin/products/edit/${product._id}` : '/admin/add-product') %>" method="post" class="form">
     <h2><%= (locals.product ? 'Edit' : 'Add') %> product</h2>
+    <%- include("../partials/messages.ejs") %>
     <div class="form-control">
       <label for="title">Title</label>
       <input
@@ -16,6 +17,7 @@
         <% if (locals.product) { %> 
           value="<%= product.title %>"
         <% } %> 
+        <% if (locals.oldBody) { %>value="<%= oldBody.title %>"<% } %>
       />
     </div>
     <div class="form-control">
@@ -27,6 +29,7 @@
         <% if (locals.product) { %> 
           value="<%= product.imageUrl %>"
         <% } %> 
+        <% if (locals.oldBody) { %>value="<%= oldBody.imageUrl %>"<% } %>
       />
     </div>
     <div class="form-control">
@@ -38,7 +41,8 @@
         step="0.01"
         <% if (locals.product) { %> 
           value="<%=(product.price+"") %>"
-        <% } %> 
+        <% } %>
+        <% if (locals.oldBody) { %>value="<%= oldBody.price %>"<% } %>
       />
     </div>
     <div class="form-control">
@@ -46,7 +50,7 @@
       <textarea
         name="description"
         id="description"
-        rows="5"><% if (locals.product) { %><%= product.description %><% } %></textarea>
+        rows="5"><% if (locals.oldBody) { %><%= oldBody.description %><% } else if (locals.product) { %><%= product.description %><% } %></textarea>
     </div>
     <button class="btn" type="submit"><%= (locals.product ? 'Save' : 'Add') %></button>
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">

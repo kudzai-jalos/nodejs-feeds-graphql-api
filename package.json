@@ -44,6 +44,7 @@
     "escape-goat": "^2.1.1",
     "express": "^4.17.2",
     "express-session": "^1.17.2",
+    "express-validator": "^6.14.0",
     "fill-range": "^7.0.1",
     "get-stream": "^4.1.0",
     "glob-parent": "^5.1.2",

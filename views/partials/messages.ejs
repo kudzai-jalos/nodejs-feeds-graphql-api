@@ -1,0 +1,7 @@
+<% if (locals.messages && messages.length > 0) { %>
+<div class="user-messages">
+  <% messages.forEach((message) => { console.log(message.msg) %>
+  <p class="msg error"><%= message.msg %></p>
+  <% }) %>
+</div>
+<% } %>
