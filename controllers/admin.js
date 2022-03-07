@@ -34,7 +34,7 @@ exports.postAddProduct = (req, res, next) => {
 
 exports.postRemoveProduct = (req, res, next) => {
   const { productId } = req.body;
-  Product.findByIdAndRemove(productId)
+  Product.deleteOne({ _id: productId, userId: req.user })
     .then((result) => {
       res.redirect("/admin/products");
     })
@@ -65,9 +65,22 @@ exports.postEditProduct = (req, res, next) => {
   console.log(productId);
   // req.user
   //   .getProducts({ where: { id: productId } })
-  Product.findByIdAndUpdate(productId, { title, imageUrl, price, description })
-    .then((result) => {
-      res.redirect("/admin/products");
+
+  Product.findById(productId)
+    .then((product) => {
+      if (product.userId.toString() !== req.user._id.toString()) {
+        console.log("Unauthorized");
+        res.redirect("/");
+      } else {
+        product
+          .updateOne({ title, imageUrl, price, description })
+          .then((result) => {
+            res.redirect("/admin/products");
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     })
     .catch((err) => {
       console.log(err);
@@ -76,7 +89,8 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getAdminProducts = (req, res, next) => {
   // req.user.getProducts()
-  Product.find()
+
+  Product.find({ userId: req.user })
     .then((products) => {
       // console.log(products)
       res.render("admin/products", {

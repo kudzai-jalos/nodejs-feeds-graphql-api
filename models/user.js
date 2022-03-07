@@ -15,6 +15,8 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  resetToken: String,
+  resetTokenExpiration: Date,
   cart: {
     items: [
       {
@@ -73,22 +75,21 @@ userSchema.methods.removeFromCart = function (productId) {
   return this.updateCart();
 };
 
-userSchema.methods.updateCart = function() {
+userSchema.methods.updateCart = function () {
+  return this.populate("cart.items.productId").then((user) => {
+    const totalPrice = user.cart.items.reduce((total, item) => {
+      return total + item.productId._doc.price * item.quantity;
+    }, 0);
+    this.cart.totalPrice = totalPrice;
 
-    return this.populate("cart.items.productId").then(user=>{
-      const totalPrice = user.cart.items.reduce((total,item)=>{
-        return total + item.productId._doc.price * item.quantity;
-      },0);
-      this.cart.totalPrice = totalPrice;
+    return this.save();
+  });
+};
 
-      return this.save();
-    });
-}
-
-userSchema.methods.clearCart = function() {
+userSchema.methods.clearCart = function () {
   this.cart.items = [];
   return this.updateCart();
-}
+};
 
 module.exports = mongoose.model("user", userSchema);
 
