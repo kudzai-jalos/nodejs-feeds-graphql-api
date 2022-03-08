@@ -5,6 +5,8 @@ const { ObjectId } = require("mongodb");
 const { handleServerError } = require("./error");
 const { deleteFile } = require("../util/file");
 
+const ITEMS_PER_PAGE = 2;
+
 exports.getAddProduct = (req, res, next) => {
   if (!req.session.isLoggedIn) {
     res.redirect("/login");
@@ -66,7 +68,7 @@ exports.postRemoveProduct = (req, res, next) => {
         throw new Error("Unauthorized");
       } else {
         deleteFile(product.imageUrl);
-        return Product.deleteOne({_id:productId});
+        return Product.deleteOne({ _id: productId });
       }
     })
     .then((result) => {
@@ -142,8 +144,16 @@ exports.postEditProduct = (req, res, next) => {
 
 exports.getAdminProducts = (req, res, next) => {
   // req.user.getProducts()
-
+  const page = +req.query.page || 1;
+  let totalItems;
   Product.find({ userId: req.user })
+    .countDocuments()
+    .then((numProducts) => {
+      totalItems = numProducts;
+      return Product.find({ userId: req.user })
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       // console.log(products)
       res.render("admin/products", {
@@ -151,6 +161,13 @@ exports.getAdminProducts = (req, res, next) => {
         path: "/admin/products",
         products,
         isAdmin: true,
+        totalProducts: totalItems,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+        currentPage: page,
       });
     })
     .catch((err) => {

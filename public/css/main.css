@@ -85,3 +85,23 @@ h2 {
   background-color: rgb(255, 214, 214);
   color: red;
 }
+
+.pagination {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.pagination a {
+  text-decoration: none;
+  color: rgb(55, 100, 184);
+  padding: .5rem;
+  border: 1px solid;
+  margin: 0 1rem;
+}
+
+.pagination a:hover,
+.pagination a:active,
+.pagination a.active {
+  background-color: rgb(55, 100, 184);
+  color: white;
+}

@@ -7,9 +7,21 @@ const path = require("path");
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
 
+const ITEMS_PER_PAGE = 2;
+
 exports.getIndex = (req, res, next) => {
   // Product.findAll()
+  const page = +req.query.page || 1;
+  let totalItems ;
+
   Product.find()
+    .countDocuments()
+    .then((numProducts) => {
+      totalItems = numProducts;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       res.render("shop/products", {
         docTitle: "Shop",
@@ -18,6 +30,13 @@ exports.getIndex = (req, res, next) => {
         hasProducts: products.length > 0,
         activeShop: true,
         shopCSS: true,
+        totalProducts:totalItems,
+        hasNextPage:ITEMS_PER_PAGE*page < totalItems,
+        hasPrevPage:page > 1,
+        nextPage: page+1,
+        prevPage:page-1,
+        lastPage:Math.ceil(totalItems/ITEMS_PER_PAGE),
+        currentPage:page,
       });
     })
     .catch((err) => handleServerError(err, next));
@@ -26,7 +45,16 @@ exports.getIndex = (req, res, next) => {
 exports.getProducts = (req, res, next) => {
   // req.user
   //   .getProducts()
+  const page = +req.query.page || 1;
+  let totalItems ;
   Product.find()
+    .countDocuments()
+    .then((numProducts) => {
+      totalItems = numProducts;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       // console.table(products);
       res.render("shop/products", {
@@ -35,7 +63,13 @@ exports.getProducts = (req, res, next) => {
         products,
         hasProducts: products.length > 0,
         activeShop: true,
-        shopCSS: true,
+        shopCSS: true,totalProducts:totalItems,
+        hasNextPage:ITEMS_PER_PAGE*page < totalItems,
+        hasPrevPage:page > 1,
+        nextPage: page+1,
+        prevPage:page-1,
+        lastPage:Math.ceil(totalItems/ITEMS_PER_PAGE),
+        currentPage:page,
       });
     })
     .catch((err) => {
@@ -160,7 +194,7 @@ exports.getProductDetails = (req, res, next) => {
 
 exports.getInvoice = (req, res, next) => {
   const { orderId } = req.params;
-  
+
   Order.findOne({ _id: orderId })
     .then((order) => {
       if (!order) {
@@ -186,22 +220,27 @@ exports.getInvoice = (req, res, next) => {
         pdfDoc.pipe(fs.createWriteStream(pathName));
         pdfDoc.pipe(res);
 
-        pdfDoc.fontSize(24).text("Invoice",{
-          underline:true,
-          align:"center",
+        pdfDoc.fontSize(24).text("Invoice", {
+          underline: true,
+          align: "center",
         });
 
         // pdfDoc.text("Title    Quantity    Price")
         let totalPrice = 0;
-        order.items.forEach(prod=>{
-          totalPrice+=prod.price*prod.quantity;
-          pdfDoc.fontSize(14).text(`${prod.title}    x${prod.quantity}    $${prod.price}`)
-        })
+        order.items.forEach((prod) => {
+          totalPrice += prod.price * prod.quantity;
+          pdfDoc
+            .fontSize(14)
+            .text(`${prod.title}    x${prod.quantity}    $${prod.price}`);
+        });
         pdfDoc.text("___");
-        pdfDoc.fontSize(16).fillColor("#333").text("Total: $"+totalPrice)
+        pdfDoc
+          .fontSize(16)
+          .fillColor("#333")
+          .text("Total: $" + totalPrice);
         pdfDoc.end();
         // const file = fs.createReadStream(pathName);
-        
+
         // file.pipe(res);
       } else {
         return next(new Error("Unauthorized"));
