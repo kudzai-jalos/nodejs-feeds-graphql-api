@@ -16,11 +16,9 @@
     <div class="card__actions">
       <% if (locals.isAdmin) { %>
       <a href="/admin/products/edit/<%= product._id %>" class="btn">Edit</a>
-      <form action="/admin/products/remove" method="post">
-        <button type="submit" class="btn">Delete</button>
+        <button onclick="deleteProduct(this)" class="btn">Delete</button>
         <input type="hidden" name="productId" value="<%= product._id %>" />
         <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-      </form>
       <% } else { %>
       <a href="/products/<%= product._id %>" class="btn">Details</a>
       <%- include("../partials/add-to-cart.ejs",{product}) %> <% } %>

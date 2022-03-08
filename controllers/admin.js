@@ -58,8 +58,8 @@ exports.postAddProduct = (req, res, next) => {
     });
 };
 
-exports.postRemoveProduct = (req, res, next) => {
-  const { productId } = req.body;
+exports.deleteProduct = (req, res, next) => {
+  const { productId } = req.params;
   Product.findOne({ _id: productId })
     .then((product) => {
       if (!product) {
@@ -72,9 +72,13 @@ exports.postRemoveProduct = (req, res, next) => {
       }
     })
     .then((result) => {
-      res.redirect("/admin/products");
+      res.status(200).json({
+        message:"success"
+      });
     })
-    .catch((err) => handleServerError(err, next));
+    .catch((err) => res.status(500).json({
+      message:"deleting products failed"
+    }));
 };
 
 exports.getEditProduct = (req, res, next) => {

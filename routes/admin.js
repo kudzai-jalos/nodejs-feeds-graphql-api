@@ -30,22 +30,16 @@ const productValidation = [
 ];
 
 const router = express.Router();
+router.delete("/products/remove/:productId", adminController.deleteProduct);
 router.use(isAuth);
 router
   .route("/add-product")
   .get(adminController.getAddProduct)
-  .post(
-    productValidation,
-    adminController.postAddProduct
-  );
-router.post("/products/remove", adminController.postRemoveProduct);
+  .post(productValidation, adminController.postAddProduct);
 router.get("/products", adminController.getAdminProducts);
 router
   .route("/products/edit/:productId")
   .get(adminController.getEditProduct)
-  .post(
-    productValidation,
-    adminController.postEditProduct
-  );
+  .post(productValidation, adminController.postEditProduct);
 
 module.exports = router;
