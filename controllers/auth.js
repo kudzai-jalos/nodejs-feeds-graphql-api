@@ -1,3 +1,5 @@
+const { handleServerError } = require("./error");
+
 const crypto = require("crypto");
 
 const bcrypt = require("bcryptjs");
@@ -20,7 +22,7 @@ exports.getSignup = (req, res, next) => {
   res.render("auth/signup", {
     docTitle: "Signup",
     path: "/signup",
-    messages:[],
+    messages: [],
   });
 };
 
@@ -34,7 +36,7 @@ exports.postSignup = (req, res, next) => {
       docTitle: "Signup",
       path: "/signup",
       messages: errors.array(),
-      oldBody:req.body,
+      oldBody: req.body,
     });
   }
 
@@ -60,16 +62,15 @@ exports.postSignup = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      handleServerError(err, next);
     });
 };
 
 exports.getLogin = (req, res, next) => {
-  
   res.render("auth/login", {
     docTitle: "Login",
     path: "/login",
-    messages:[],
+    messages: [],
   });
 };
 
@@ -80,7 +81,7 @@ exports.postLogin = (req, res, next) => {
       docTitle: "Login",
       path: "/login",
       messages: [errors.array()[0]],
-      oldBody:req.body,
+      oldBody: req.body,
     });
   }
   req.session.isLoggedIn = true;
@@ -143,7 +144,7 @@ exports.postReset = (req, res, next) => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        handleServerError(err, next);
       });
   });
 };
@@ -173,7 +174,7 @@ exports.getNewPassword = (req, res, next) => {
       }
     })
     .catch((err) => {
-      console.log(err);
+      handleServerError(err, next);
     });
 };
 
@@ -202,13 +203,11 @@ exports.postNewPassword = (req, res, next) => {
             res.redirect("/login");
           })
           .catch((err) => {
-            res.redirect("/");
-            console.log(err);
+            handleServerError(err, next);
           });
       }
     })
     .catch((err) => {
-      res.redirect("/");
-      console.log(err);
+      handleServerError(err, next);
     });
 };

@@ -51,6 +51,7 @@ app.use(
 app.use(csrfProtection);
 app.use(flash())
 app.use((req, res, next) => {
+  // throw new Error("Sync dummy")
   if (req.session?.isLoggedIn) {
     User.findById(req.session.user._id)
       .then((user) => {
@@ -58,7 +59,9 @@ app.use((req, res, next) => {
         next();
       })
       .catch((err) => {
+        
         console.log(err);
+        next(err);
       });
   } else {
     next();
@@ -75,8 +78,20 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
-// Add 404
+// Error handling middleware
+app.use("/500",errorController.get500)
 app.use(errorController.get404);
+
+app.use((error,req,res,next)=>{
+  res
+    .status(500)
+    .render("500", {
+      csrfToken: req.csrfToken(),
+      docTitle: "500",
+      path: "/500",
+    });
+})
+
 // Listen for incoming requests
 
 mongoose

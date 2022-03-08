@@ -1,5 +1,8 @@
 const Product = require("../models/product");
-const {validationResult} = require("express-validator")
+const {validationResult} = require("express-validator");
+const { ObjectId } = require("mongodb");
+
+const {handleServerError} = require("./error");
 
 exports.getAddProduct = (req, res, next) => {
   if (!req.session.isLoggedIn) {
@@ -31,6 +34,7 @@ exports.postAddProduct = (req, res, next) => {
     });
   }
   const product = new Product({
+    _id:new ObjectId("6225d4947587a760b9b04cad"),//ERROR HANDLING TEST
     title,
     imageUrl,
     description,
@@ -43,7 +47,8 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.log(err);
+      handleServerError(err,next);
+      handleServerError(err,next);
     });
 };
 
@@ -53,7 +58,7 @@ exports.postRemoveProduct = (req, res, next) => {
     .then((result) => {
       res.redirect("/admin/products");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => handleServerError(err,next));
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -73,7 +78,7 @@ exports.getEditProduct = (req, res, next) => {
         product,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => handleServerError(err,next));
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -105,12 +110,12 @@ exports.postEditProduct = (req, res, next) => {
             res.redirect("/admin/products");
           })
           .catch((err) => {
-            console.log(err);
+            handleServerError(err,next);
           });
       }
     })
     .catch((err) => {
-      console.log(err);
+      handleServerError(err,next);
     });
 };
 
@@ -128,6 +133,6 @@ exports.getAdminProducts = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      handleServerError(err,next);
     });
 };

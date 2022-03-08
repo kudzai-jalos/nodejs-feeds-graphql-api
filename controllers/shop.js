@@ -1,3 +1,5 @@
+const { handleServerError } = require("./error");
+
 const Order = require("../models/order");
 const Product = require("../models/product");
 const User = require("../models/user");
@@ -15,7 +17,7 @@ exports.getIndex = (req, res, next) => {
         shopCSS: true,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => handleServerError(err,next));
 };
 
 exports.getProducts = (req, res, next) => {
@@ -34,7 +36,7 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      handleServerError(err,next)
     });
 };
 
@@ -79,7 +81,7 @@ exports.postCart = (req, res, next) => {
       res.redirect("/cart");
     })
     .catch((err) => {
-      console.log(err);
+      handleServerError(err,next)
     });
 };
 
@@ -92,7 +94,7 @@ exports.postRemoveCartItem = (req, res, next) => {
       res.redirect("/cart");
     })
     .catch((err) => {
-      console.log(err);
+      handleServerError(err,next)
     });
 };
 
@@ -106,7 +108,7 @@ exports.getOrders = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      handleServerError(err,next)
     });
 };
 
@@ -134,7 +136,7 @@ exports.postCheckout = (req, res, next) => {
       res.redirect("/orders");
     })
     .catch((err) => {
-      console.log(err);
+      handleServerError(err,next)
     });
 };
 
@@ -149,6 +151,6 @@ exports.getProductDetails = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      handleServerError(err,next)
     });
 };
