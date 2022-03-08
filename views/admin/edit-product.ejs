@@ -5,7 +5,7 @@
 %>
 
 <main>
-  <form action="<%= (locals.product ? `/admin/products/edit/${product._id}` : '/admin/add-product') %>" method="post" class="form">
+  <form action="<%= (locals.product ? `/admin/products/edit/${product._id}` : '/admin/add-product') %>" method="post" enctype="multipart/form-data" class="form">
     <h2><%= (locals.product ? 'Edit' : 'Add') %> product</h2>
     <%- include("../partials/messages.ejs") %>
     <div class="form-control">
@@ -21,16 +21,13 @@
       />
     </div>
     <div class="form-control">
-      <label for="iamgeUrl">Image URL</label>
-      <input
+      <label for="image">Image</label>
+      <!-- <input
         type="text"
         name="imageUrl"
         id="imageUrl"
-        <% if (locals.product) { %> 
-          value="<%= product.imageUrl %>"
-        <% } %> 
-        <% if (locals.oldBody) { %>value="<%= oldBody.imageUrl %>"<% } %>
-      />
+      /> -->
+      <input type="file" name="image" id="image" />
     </div>
     <div class="form-control">
       <label for="price">Price</label>

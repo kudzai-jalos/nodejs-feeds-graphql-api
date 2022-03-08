@@ -12,11 +12,6 @@ const productValidation = [
     .bail()
     .notEmpty()
     .withMessage("A product title is required"),
-  body("imageUrl", "A valid product image url is required")
-    .trim()
-    .notEmpty()
-    .bail()
-    .isURL(),
   body("price")
     .trim()
     .notEmpty()
@@ -27,9 +22,9 @@ const productValidation = [
     .trim()
     .notEmpty()
     .withMessage("A product description is required")
-    .isLength({ min: 100, max: 1000 })
+    .isLength({ min: 30, max: 1000 })
     .withMessage(
-      "The product description should be between 100 and 1000 characters long"
+      "The product description should be between 30 and 1000 characters long"
     )
     .bail(),
 ];

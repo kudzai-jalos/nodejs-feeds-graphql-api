@@ -7,14 +7,18 @@
   <% orders.forEach((order)=>{ %>
     <li class="card">
       <h3>Order #<%= order._id%></h3>
+      <a href="/orders/<%= order._id %>">Invoice</a>
       <ul class="items">
         <% order.items.forEach((product)=>{ %>
           <li>
             <h4><%= product.title %> (<%= product.quantity %>)</h4>
           </li>
         <% }) %>
+        
       </ul>
+      
     </li>
   <% }) %>
 </ul>
+
 <%- include('../partials/foot.ejs')%>

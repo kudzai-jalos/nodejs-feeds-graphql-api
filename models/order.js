@@ -7,7 +7,7 @@ const orderSchema = new Schema({
     ref:'user',
     required:true,
   },
-  items:[{title:{type:String,required:true},quantity:{type:Number,required:true}}]
+  items:[{title:{type:String,required:true},price:{type:Number,required:true},quantity:{type:Number,required:true}}]
 });
 
 const Order = mongoose.model("order",orderSchema);
