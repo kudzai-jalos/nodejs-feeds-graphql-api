@@ -29,11 +29,13 @@
   <% }) %>
   <hr>
   <li class="price cart-items__total">Total: $ <%= (+totalPrice).toFixed(2) %> </li>
+  <a href="/checkout">Order now</a>
 </ul>
-<form action="/cart/checkout" method="post">
+<!-- <form action="/cart/checkout" method="post">
   <button type="submit" class="btn">Checkout</button>
   <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-</form>
+</form> -->
+
 <% } else {%>
   <p>No items in your cart</p>
 <% } %> 

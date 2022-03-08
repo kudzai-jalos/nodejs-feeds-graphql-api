@@ -6,13 +6,14 @@ const User = require("../models/user");
 const path = require("path");
 const fs = require("fs");
 const PDFDocument = require("pdfkit");
+const stripe = require("stripe")(process.env.STRIPE_API_KEY)
 
 const ITEMS_PER_PAGE = 2;
 
 exports.getIndex = (req, res, next) => {
   // Product.findAll()
   const page = +req.query.page || 1;
-  let totalItems ;
+  let totalItems;
 
   Product.find()
     .countDocuments()
@@ -30,13 +31,13 @@ exports.getIndex = (req, res, next) => {
         hasProducts: products.length > 0,
         activeShop: true,
         shopCSS: true,
-        totalProducts:totalItems,
-        hasNextPage:ITEMS_PER_PAGE*page < totalItems,
-        hasPrevPage:page > 1,
-        nextPage: page+1,
-        prevPage:page-1,
-        lastPage:Math.ceil(totalItems/ITEMS_PER_PAGE),
-        currentPage:page,
+        totalProducts: totalItems,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+        currentPage: page,
       });
     })
     .catch((err) => handleServerError(err, next));
@@ -46,7 +47,7 @@ exports.getProducts = (req, res, next) => {
   // req.user
   //   .getProducts()
   const page = +req.query.page || 1;
-  let totalItems ;
+  let totalItems;
   Product.find()
     .countDocuments()
     .then((numProducts) => {
@@ -63,13 +64,14 @@ exports.getProducts = (req, res, next) => {
         products,
         hasProducts: products.length > 0,
         activeShop: true,
-        shopCSS: true,totalProducts:totalItems,
-        hasNextPage:ITEMS_PER_PAGE*page < totalItems,
-        hasPrevPage:page > 1,
-        nextPage: page+1,
-        prevPage:page-1,
-        lastPage:Math.ceil(totalItems/ITEMS_PER_PAGE),
-        currentPage:page,
+        shopCSS: true,
+        totalProducts: totalItems,
+        hasNextPage: ITEMS_PER_PAGE * page < totalItems,
+        hasPrevPage: page > 1,
+        nextPage: page + 1,
+        prevPage: page - 1,
+        lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+        currentPage: page,
       });
     })
     .catch((err) => {
@@ -135,6 +137,50 @@ exports.postRemoveCartItem = (req, res, next) => {
     });
 };
 
+exports.getCheckout = (req, res, next) => {
+  let fetchedUser;
+  let products;
+  let totalPrice;
+  req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      products = user.cart.items.map((item) => {
+        return {
+          quantity: item.quantity,
+          ...item.productId._doc,
+        };
+      });
+      totalPrice = user.cart.totalPrice
+      return stripe.checkout.sessions.create({
+        payment_method_types:["card"],
+        line_items: products.map(prod=>{
+          return {
+            name: prod.title,
+            description: prod.description,
+            amount:prod.price*100,
+            currency:'usd',
+            quantity:prod.quantity,
+          }
+        }),
+        success_url:req.protocol + "://"+req.get("host")+"/checkout/success",
+        cancel_url:req.protocol + "://"+req.get("host")+"/checkout/cancel",
+      });
+      
+    }).then((session)=>{
+      res.render("shop/checkout", {
+        docTitle: "Checkout",
+        path: "/checkout",
+        products ,
+        totalPrice ,
+        sessionId:session.id
+      });
+    })
+    .catch((err) => {
+      next(err);
+    });
+  
+};
+
 exports.getOrders = (req, res, next) => {
   Order.find({ userId: req.user._id })
     .then((orders) => {
@@ -149,7 +195,7 @@ exports.getOrders = (req, res, next) => {
     });
 };
 
-exports.postCheckout = (req, res, next) => {
+exports.getCheckoutSuccess = (req, res, next) => {
   let items;
   req.user
     .populate("cart.items.productId")
