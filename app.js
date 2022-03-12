@@ -12,7 +12,7 @@ const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "images");
   },
-  filename: (req,file,cb) => {
+  filename: (req, file, cb) => {
     cb(
       null,
       require("crypto").randomBytes(16).toString("hex") +
@@ -25,6 +25,14 @@ const fileStorage = multer.diskStorage({
 const fileFilter = (req, file, cb) => {
   cb(null, ["image/jpg", "image/jpeg", "image/png"].includes(file.mimetype));
 };
+app.use((req, res, next) => {
+  res.set({
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+  });
+  next();
+});
 
 app.use(bodyParser.json()); // applicaiton/json
 app.use(
@@ -34,21 +42,21 @@ app.use(
   }).single("image")
 );
 app.use("/images", express.static(path.join(__dirname, "images")));
-const feedRoutes = require("./routes/feed");
 
-app.use((req, res, next) => {
-  res.set({
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  });
-  next();
-});
+// Import routes
+const feedRoutes = require("./routes/feed");
+const authRoutes = require("./routes/auth");
+// console.log(feedRoutes);
+
 app.use("/feed", feedRoutes);
+app.use("/auth", authRoutes);
 
 app.use((error, req, res, next) => {
+  console.log(error)
+  const data = error.data;
   res.status(error.statusCode || 500).json({
     message: error.message,
+    data,
     // errors: errors.array(),
   });
 });
