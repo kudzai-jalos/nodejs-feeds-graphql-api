@@ -47,7 +47,6 @@ exports.putSignup = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   const { email, password } = req.body;
   let loadedUser;
-  console.log(req.body)
   User.findOne({ email })
     .then((user) => {
       if (!user) {
@@ -77,7 +76,6 @@ exports.postLogin = (req, res, next) => {
       res.status(200).json({ token, userId: loadedUser._id });
     })
     .catch((err) => {
-      console.log(err)
       handleError(err,next);
     });
 };

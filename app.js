@@ -52,7 +52,7 @@ app.use("/feed", feedRoutes);
 app.use("/auth", authRoutes);
 
 app.use((error, req, res, next) => {
-  console.log(error)
+  console.log(error);
   const data = error.data;
   res.status(error.statusCode || 500).json({
     message: error.message,
@@ -64,8 +64,12 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
-    app.listen(8080, () => {
-      console.log("Server running on port 8080");
+    const server = app.listen(8080,()=>{
+      console.log("Server running on port 8080")
+    });
+    const io = require("./socket").init(server);
+    io.on("connection", (socket) => {
+      console.log("Client connected");
     });
   })
   .catch((err) => {

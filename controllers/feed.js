@@ -1,8 +1,11 @@
 const { validationResult } = require("express-validator");
 const Post = require("../models/post");
+const socket = require("../socket");
+
 const fs = require("fs");
 const path = require("path");
 const User = require("../models/user");
+
 const handleError = (err, next) => {
   if (!err.statusCode) {
     err.statusCode = 500;
@@ -19,15 +22,16 @@ const clearImage = (imagePath) => {
 
 exports.getPosts = (req, res, next) => {
   const currentPage = req.query.page || 1;
-  console.log(currentPage);
   let totalItems;
   const ITEMS_PER_PAGE = 2;
   Post.countDocuments()
     .then((count) => {
       totalItems = count;
       return Post.find()
+        .sort({ createdAt: -1 })
         .skip((currentPage - 1) * ITEMS_PER_PAGE)
-        .limit(ITEMS_PER_PAGE);
+        .limit(ITEMS_PER_PAGE)
+        .populate("creator");
     })
     .then((posts) => {
       res.status(200).json({
@@ -37,7 +41,6 @@ exports.getPosts = (req, res, next) => {
       });
     })
     .catch((err) => {
-      console.log(err);
       handleError(err, next);
     });
 };
@@ -77,7 +80,22 @@ exports.createPost = (req, res, next) => {
       return user.save();
     })
     .then((result) => {
-      console.log(result);
+      const io = socket.getIO();
+      console.log(post);
+      io.emit("posts", {
+        action: "create",
+        post: {
+          _id: post._id,
+          title: post.title,
+          content: post.content,
+          imageUrl: post.imageUrl,
+          createdAt: post.createdAt,
+          creator: {
+            _id: result._id,
+            name: result.name,
+          },
+        },
+      });
       res.status(201).json({
         message: "Post created successfully",
         post: {
@@ -122,8 +140,9 @@ exports.updatePost = (req, res, next) => {
   }
 
   Post.findById(postId)
+    .populate("creator")
     .then((post) => {
-      if (post.creator.toString() !== req.userId) {
+      if (post.creator._id.toString() !== req.userId) {
         const error = new Error("Not authorized!");
         error.statusCode(401);
         throw error;
@@ -137,18 +156,20 @@ exports.updatePost = (req, res, next) => {
       if (imageUrl !== post.imageUrl) {
         clearImage(imageUrl);
       }
-
-      return post.updateOne({ title, content, imageUrl });
+      post.title = title;
+      post.content = content;
+      post.imageUrl = imageUrl;
+      return post.save();
     })
     .then((result) => {
+      const io = socket.getIO();
+      io.emit("posts", {
+        action: "update",
+        post: result,
+      });
       res.status(200).json({
         message: "Post updated",
-        post: {
-          ...result,
-          creator: {
-            name: "Kudzai",
-          },
-        },
+        post: result,
       });
     })
     .catch((err) => {
@@ -181,8 +202,6 @@ exports.deletePost = (req, res, next) => {
   Post.findById(postId)
     .then((post) => {
       // check if user is authorized
-      console.log(post.creator);
-      console.log(req.userId);
       if (post.creator.toString() !== req.userId) {
         const error = new Error("Not authorized!");
         error.statusCode = 401;
@@ -205,6 +224,11 @@ exports.deletePost = (req, res, next) => {
       return user.save();
     })
     .then((result) => {
+      const io = socket.getIO();
+      io.emit("posts", {
+        action: "delete",
+        post: postId,
+      });
       res.status(200).json({
         message: "Post deleted",
       });
