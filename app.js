@@ -1,10 +1,15 @@
 require("dotenv").config();
 const path = require("path");
+const fs = require("fs");
 
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const { graphqlHTTP } = require("express-graphql");
+const graphqlSchema = require("../node-js-academind/graphql/schema");
+const graphqlResolvers = require("../node-js-academind/graphql/resolvers");
+const isAuth = require("./middleware/is-auth");
 
 const app = express();
 
@@ -31,10 +36,14 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE",
     "Access-Control-Allow-Headers": "Content-Type, Authorization",
   });
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
   next();
 });
 
 app.use(bodyParser.json()); // applicaiton/json
+
 app.use(
   multer({
     storage: fileStorage,
@@ -43,13 +52,45 @@ app.use(
 );
 app.use("/images", express.static(path.join(__dirname, "images")));
 
-// Import routes
-const feedRoutes = require("./routes/feed");
-const authRoutes = require("./routes/auth");
-// console.log(feedRoutes);
+const { clearImage } = require("./util/file");
 
-app.use("/feed", feedRoutes);
-app.use("/auth", authRoutes);
+app.use(isAuth);
+app.put("/post-image", (req, res, next) => {
+  if (!req.isAuth) {
+    const error = new Error("Not authenticated");
+    error.code = 401;
+    throw error;
+  }
+  if (!req.file) {
+    return res.status(200).json({ message: "No file provided" });
+  }
+  if (req.body.oldPath) {
+    console.log(req.body);
+    clearImage(req.body.oldPath);
+  }
+
+  return res
+    .status(201)
+    .json({ message: "File stored", fileName: req.file.filename });
+});
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: graphqlSchema,
+    rootValue: graphqlResolvers,
+    graphiql: true,
+    customFormatErrorFn(err) {
+      console.log(err.originalError);
+      if (!err.originalError) {
+        return err;
+      }
+      const data = err.originalError.data;
+      const message = err.message || "An error occured.";
+      const code = err.originalError.code || 500;
+      return { message, status: code, data };
+    },
+  })
+);
 
 app.use((error, req, res, next) => {
   console.log(error);
@@ -57,19 +98,14 @@ app.use((error, req, res, next) => {
   res.status(error.statusCode || 500).json({
     message: error.message,
     data,
-    // errors: errors.array(),
   });
 });
 
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
-    const server = app.listen(8080,()=>{
-      console.log("Server running on port 8080")
-    });
-    const io = require("./socket").init(server);
-    io.on("connection", (socket) => {
-      console.log("Client connected");
+    const server = app.listen(8080, () => {
+      console.log("Server running on port 8080");
     });
   })
   .catch((err) => {
